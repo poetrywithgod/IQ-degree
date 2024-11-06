@@ -1,0 +1,18 @@
+body {
+    font-family: 'Itim', sans-serif;
+    background-color: #f0f4f8;
+}
+.transition-width {
+    transition: width 1s;
+}
+@media (max-width: 768px) {
+    .transition-width {
+        width: 100% !important;
+    }
+    .flex-col {
+        flex-direction: column !important;
+    }
+    .rounded-l-lg {
+        border-radius: 0 !important;
+    }
+}
