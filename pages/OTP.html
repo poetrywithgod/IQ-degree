@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Form</title>
+    <!-- Tailwind CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet">
+</head>
+
+<body class="flex items-center justify-center min-h-screen bg-gray-100" style="font-family: 'Itim', sans-serif;">
+
+    <div id="root"></div>
+
+    <!-- React, ReactDOM, and Babel CDNs -->
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- React Component in JSX -->
+    <script type="text/babel">
+        function OTPForm() {
+            const [otp, setOtp] = React.useState(["", "", "", ""]);
+            const [isResendDisabled, setIsResendDisabled] = React.useState(false);
+            const [timer, setTimer] = React.useState(40);
+            const [message, setMessage] = React.useState("");
+
+            const correctOtp = "1234";
+
+            // Handle OTP input change
+            const handleOtpChange = (index, value) => {
+                const newOtp = [...otp];
+                newOtp[index] = value;
+                setOtp(newOtp);
+            };
+
+            // Handle Verify click
+            const handleVerifyClick = (e) => {
+                e.preventDefault();
+                const enteredOtp = otp.join(""); // Combine the 4 inputs into a single string
+
+                if (enteredOtp === correctOtp) {
+                    setMessage("Successful");
+                } else {
+                    setMessage("Wrong code, try again");
+                }
+            };
+
+            // Handle Resend Code click
+            const handleResendClick = () => {
+                setIsResendDisabled(true);
+                setTimer(40);
+                setMessage("");
+
+                const countdown = setInterval(() => {
+                    setTimer((prevTimer) => {
+                        if (prevTimer === 1) {
+                            clearInterval(countdown);
+                            setIsResendDisabled(false);
+                        }
+                        return prevTimer - 1;
+                    });
+                }, 1000);
+            };
+
+            return (
+                <div className="flex items-center justify-center">
+                    <div className="w-90">
+                        <form className="w-[230px] h-[300px] bg-white flex flex-col items-center justify-center p-5 gap-5 relative shadow-md rounded-lg">
+                            <span className="text-lg font-bold text-gray-800">Enter OTP</span>
+                            <p className="text-xs text-center text-black leading-[17px]">We have sent a verification code to your mobile number</p>
+
+                            <div className="w-full flex flex-row gap-2 items-center justify-center">
+                                {otp.map((digit, index) => (
+                                    <input
+                                        key={index}
+                                        required
+                                        maxLength="1"
+                                        type="text"
+                                        value={digit}
+                                        onChange={(e) => handleOtpChange(index, e.target.value)}
+                                        className="otp-input w-8 h-8 bg-gray-200 text-center rounded-md focus:bg-blue-100 font-semibold text-gray-800 outline-none transition-colors"
+                                    />
+                                ))}
+                            </div>
+
+                            <button
+                                type="submit"
+                                className="w-full h-10 bg-red-500 text-white font-semibold rounded-md mt-4 hover:bg-teal-600 transition-colors z-10"
+                                onClick={handleVerifyClick}
+                            >
+                                Verify
+                            </button>
+
+                            <button type="button" className="absolute top-1 right-1 shadow-md bg-teal-500 rounded-full w-6 h-6 border-none text-black text-lg cursor-pointer">
+                                ×
+                            </button>
+
+                            {message && (
+                                <p className="text-xs text-center text-black mt-2 font-bold">{message}</p>
+                            )}
+
+                            <p className="text-xs text-black w-full flex flex-col items-center justify-center gap-1">
+                                Didn't receive the code?
+                                <button
+                                    type="button"
+                                    className="text-blue-500 font-bold cursor-pointer"
+                                    onClick={handleResendClick}
+                                    disabled={isResendDisabled}
+                                >
+                                    {isResendDisabled ? `Resend Code (${timer}s)` : 'Resend Code'}
+                                </button>
+                            </p>
+                        </form>
+                    </div>
+                </div>
+            );
+        }
+
+        // Render the component
+        ReactDOM.render(<OTPForm />, document.getElementById('root'));
+    </script>
+</body>
+
+</html>
